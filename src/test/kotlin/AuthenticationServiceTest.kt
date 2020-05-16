@@ -34,6 +34,20 @@ class AuthenticationServiceTest {
         shouldLog("joey", "failed")
     }
 
+    @Test
+    fun should_not_log_when_valid() {
+        givenPassword("joey", "91")
+        givenToken("000000")
+        authenticationService.isValid("joey", "91000000")
+        shouldNotLog()
+    }
+
+    private fun shouldNotLog() {
+        verify(exactly = 0) {
+            logger.save(any())
+        }
+    }
+
     private fun shouldLog(account: String, state: String) {
         //        verify { logger.save("account: joey try to login failed") }
         //        verify { logger.save(any()) }
