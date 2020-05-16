@@ -1,6 +1,7 @@
 class AuthenticationService(
     private val profile: ProfileDao = ProfileDao(),
-    private val token: RsaTokenDao = RsaTokenDao()
+    private val token: RsaTokenDao = RsaTokenDao(),
+    private val logger: MyLogger
 ) {
 
     fun isValid(account: String, passcode: String): Boolean {
@@ -14,8 +15,11 @@ class AuthenticationService(
         if (isValid) {
 
             return true
+        } else {
+
+            logger.save("account: $account try to login failed")
+            return false
         }
 
-        return false
     }
 }

@@ -1,14 +1,18 @@
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class AuthenticationServiceTest {
 
     private val profile = mockk<ProfileDao>(relaxed = true)
     private val tokenDao = mockk<RsaTokenDao>(relaxed = true)
-    private val authenticationService = AuthenticationService(profile, tokenDao)
+    private val logger = mockk<MyLogger>(relaxed = true)
+    private val authenticationService = AuthenticationService(profile, tokenDao, logger)
 
     @Test
     fun is_valid() {
@@ -22,6 +26,26 @@ class AuthenticationServiceTest {
         givenPassword("joey", "91")
         givenToken("000000")
         shouldBeInvalid("joey", "wrong passcode")
+    }
+
+    @Test
+    fun should_log_account_when_invalid() {
+        whenInvalid("joey", "wrong passcode")
+//        verify { logger.save("account: joey try to login failed") }
+//        verify { logger.save(any()) }
+//        verify(exactly = 1) { logger.save(any()) }
+        val message = slot<String>()
+        verify(exactly = 1) {
+            logger.save(capture(message))
+        }
+
+        assertThat(message.captured).contains("joey", "failed")
+    }
+
+    private fun whenInvalid(account: String, passcode: String) {
+        givenPassword(account, "91")
+        givenToken("000000")
+        authenticationService.isValid(account, passcode)
     }
 
     private fun shouldBeInvalid(account: String, passcode: String) {
