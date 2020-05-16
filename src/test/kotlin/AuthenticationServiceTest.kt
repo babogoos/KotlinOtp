@@ -36,10 +36,14 @@ class AuthenticationServiceTest {
 
     @Test
     fun should_not_log_when_valid() {
+        whenValid()
+        shouldNotLog()
+    }
+
+    private fun whenValid() {
         givenPassword("joey", "91")
         givenToken("000000")
         authenticationService.isValid("joey", "91000000")
-        shouldNotLog()
     }
 
     private fun shouldNotLog() {
