@@ -31,15 +31,19 @@ class AuthenticationServiceTest {
     @Test
     fun should_log_account_when_invalid() {
         whenInvalid("joey", "wrong passcode")
-//        verify { logger.save("account: joey try to login failed") }
-//        verify { logger.save(any()) }
-//        verify(exactly = 1) { logger.save(any()) }
+        shouldLog("joey", "failed")
+    }
+
+    private fun shouldLog(account: String, state: String) {
+        //        verify { logger.save("account: joey try to login failed") }
+        //        verify { logger.save(any()) }
+        //        verify(exactly = 1) { logger.save(any()) }
         val message = slot<String>()
         verify(exactly = 1) {
             logger.save(capture(message))
         }
 
-        assertThat(message.captured).contains("joey", "failed")
+        assertThat(message.captured).contains(account, state)
     }
 
     private fun whenInvalid(account: String, passcode: String) {
