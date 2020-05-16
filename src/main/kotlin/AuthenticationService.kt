@@ -1,10 +1,12 @@
-class AuthenticationService {
-    fun isValid(account: String, passcode: String): Boolean {
-        val profileDao = ProfileDao()
-        val passwordFromDao = profileDao.getPassword(account)
+class AuthenticationService(
+    private val profile: ProfileDao = ProfileDao(),
+    private val token: RsaTokenDao = RsaTokenDao()
+) {
 
-        val rsaTokenDao = RsaTokenDao()
-        val randomCode = rsaTokenDao.getRandom(account)
+    fun isValid(account: String, passcode: String): Boolean {
+        val passwordFromDao = profile.getPassword(account)
+
+        val randomCode = token.getRandom(account)
 
         val validPassCode = passwordFromDao + randomCode
 
