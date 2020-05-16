@@ -1,5 +1,6 @@
 import io.mockk.every
 import io.mockk.mockk
+import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
 import org.junit.Test
 
@@ -16,9 +17,19 @@ class AuthenticationServiceTest {
         shouldBeValid("joey", "91000000")
     }
 
+    @Test
+    fun is_invalid() {
+        givenPassword("joey", "91")
+        givenToken("000000")
+        shouldBeInvalid("joey", "wrong passcode")
+    }
+
+    private fun shouldBeInvalid(account: String, passcode: String) {
+        assertFalse(authenticationService.isValid(account, passcode))
+    }
+
     private fun shouldBeValid(account: String, passcode: String) {
-        val isValid = authenticationService.isValid(account, passcode)
-        assertTrue(isValid)
+        assertTrue(authenticationService.isValid(account, passcode))
     }
 
     private fun givenToken(token: String) {
